@@ -7,7 +7,7 @@ const Book = mongoose.Schema({
 	orderQuantity: Number,
 });
 
-const OrderSchema = mongoose.Schema(
+const orderSchema = mongoose.Schema(
 	{
 		userId: {
 			type: mongoose.ObjectId,
@@ -19,4 +19,4 @@ const OrderSchema = mongoose.Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("orders", OrdersSchema);
+module.exports = mongoose.model("orders", orderSchema);

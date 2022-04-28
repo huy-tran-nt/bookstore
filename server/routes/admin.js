@@ -1,5 +1,5 @@
 const express = require("express");
-const jwt = requrie("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const orders = require("../controllers/orders");
 const admin = require("../controllers/admin");
 

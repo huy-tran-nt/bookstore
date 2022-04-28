@@ -1,48 +1,47 @@
-const adminModel = require("../models/admin");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passportJWT = require("passport-jwt");
-const admin = require("../models/admin");
+const user = require("../models/users");
 
-const secret = process.env.SECRET_KEY;
+const userSecret = process.env.USER_SECRET;
 
 const options = {};
 const extract = passportJWT.ExtractJwt;
-options.secretOrKey = secret;
+options.secretOrKey = userSecret;
 options.jwtFromRequest = passportJWT.ExtractJwt.fromAuthHeaderWithScheme("jwt");
 
-exports.createAdmin = function (req, res, next) {
+exports.createUser = function (req, res, next) {
 	const name = req.body.name.toString().trim();
 	const email = req.body.email.toString().trim();
-	const password = req.body.password.toString().trim();
+	const password = req.body.password.toString();
 
-	const admin = new adminModel({
+	const u = new Users({
 		name,
 		email,
 		password,
 	});
 
-	const hashedAdmin = (admin, fn) => {
+	const hashedUser = (user, fn) => {
 		bcryptjs.genSalt(20, (e, salt) => {
-			bcryptjs.hash(admin.password, salt, (e, hash) => {
-				const a = admin;
-				a.password = hash;
-				a.save(fn);
+			bcryptjs.hash(user.password, salt, (e, hash) => {
+				const u = user;
+				u.password = hash;
+				u.save(fn);
 			});
 		});
 	};
 
-	hashedAdmin(admin, (e, user) => {
+	hashedUser(u, (e, user) => {
 		if (e) {
 			return next(err);
 		}
-		res.json({ createAdmin: "success" });
+		res.json({ createUser: "success" });
 	});
 };
 
-exports.validateAdmin = function (req, res, next) {
+exports.validateUser = function (req, res, next) {
 	const getByEmail = (email, fn) => {
-		adminModel.findOne({ email: email }, fn);
+		user.findOne({ email: email }, fn);
 	};
 
 	const compare = (pw, hash, callback) => {
@@ -58,21 +57,21 @@ exports.validateAdmin = function (req, res, next) {
 		const email = req.body.email;
 		const pw = req.body.password;
 
-		getByEmail(email, (e, admin) => {
-			if (!admin) {
+		getByEmail(email, (e, user) => {
+			if (!user) {
 				res.status(404).json({ message: "Account does not exists" });
 			} else {
-				compare(pw, admin.password, (err, isMatch) => {
+				compare(pw, user.password, (err, isMatch) => {
 					if (err) {
 						next(err);
 					}
 					if (isMatch) {
-						const payload = { id: admin._id };
+						const payload = { id: user._id };
 						const token = jwt.sign(payload, options.secretOrKey, {
 							expiresIn: "4h",
 						});
 						res.json({
-							id: admin._id,
+							id: user._id,
 							token,
 							signInStatus: "success",
 						});

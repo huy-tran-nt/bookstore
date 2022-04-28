@@ -20,8 +20,11 @@ mongoose
 		console.log("Connected to DB");
 	});
 
+// ROUTERS
 var indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users"); //delete later
+const adminRouter = require("./routes/admin");
+const orderRouter = require("./routes/orders");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -38,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // PASSPORT
 app.use(passport.initialize());
 
-// ROUTERS
+// MIDDLEWARES
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
